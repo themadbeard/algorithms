@@ -22,6 +22,8 @@ public class Percolation {
   }
 
   public void open(int row, int col) {
+    checkLimits(row, col);
+
     int currentSiteQFIndex = getQFIndex(row, col);
 
     if(isOpen(row, col)) {
@@ -63,14 +65,13 @@ public class Percolation {
   }
 
   public boolean isOpen(int row, int col) {
+    checkLimits(row, col);
     return sites[row - 1][col - 1];
   }
 
   public boolean isFull(int row, int col) {
-    if((row < 0 || row >= size) ||  (col < 0 || col >= size)) {
-      throw new IllegalArgumentException();
-    }
-    return quickUnionUF.connected(getQFIndex(row, col), top);
+    checkLimits(row, col);
+    return quickUnionUF.connected(top, getQFIndex(row, col));
   }
 
   public int numberOfOpenSites() {
@@ -85,5 +86,11 @@ public class Percolation {
   // In UnionFind used an one-dimensional array.
   private int getQFIndex(int row, int col) {
     return (row - 1) * size + col;
+  }
+
+  private void checkLimits(int row, int col) {
+    if((row < 0 || row >= size) ||  (col < 0 || col >= size)) {
+      throw new IllegalArgumentException();
+    }
   }
 }
