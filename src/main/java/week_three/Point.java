@@ -4,6 +4,7 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.util.Comparator;
 
 public class Point implements Comparable<Point> {
+
   private final int x;
   private final int y;
 
@@ -24,7 +25,7 @@ public class Point implements Comparable<Point> {
   @Override
   public int compareTo(Point that) {
 
-    if (this.y == that.y && this.x == that.y) {
+    if (this.y == that.y && this.x == that.x) {
       return 0;
     }
 
@@ -36,7 +37,7 @@ public class Point implements Comparable<Point> {
   }
 
   public double slopeTo(Point that) {
-    if(this.x == that.x && this.y == that.y) {
+    if (this.x == that.x && this.y == that.y) {
       return Double.NEGATIVE_INFINITY;
     }
 
@@ -47,7 +48,7 @@ public class Point implements Comparable<Point> {
       return Double.POSITIVE_INFINITY;
     }
 
-    if(deltaY == 0.0) {
+    if (deltaY == 0.0) {
       return +0.0;
     }
 

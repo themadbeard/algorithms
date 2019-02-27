@@ -6,10 +6,10 @@ import java.util.List;
 
 public class FastCollinearPoints {
 
-  private List<LineSegment> lineSegments;
+  private final List<LineSegment> lineSegments;
 
   public FastCollinearPoints(Point[] points) {
-    if(points == null || points.length == 0) {
+    if (points == null || points.length == 0) {
       throw new IllegalArgumentException();
     }
 
@@ -18,7 +18,7 @@ public class FastCollinearPoints {
     Point[] copy = Arrays.copyOf(points, points.length);
     lineSegments = new ArrayList<>();
 
-    for(int i = 0; i < copy.length - 3; ++i) {
+    for (int i = 0; i < copy.length - 3; ++i) {
       //Sort array to some initial order.
       Arrays.sort(copy);
 
@@ -26,7 +26,7 @@ public class FastCollinearPoints {
       Arrays.sort(copy, copy[i].slopeOrder());
 
       //current point is always first (p = 0)
-      for(int p = 0, firstIndex = 1, lastIndex = 2; lastIndex < copy.length; ++lastIndex) {
+      for (int p = 0, firstIndex = 1, lastIndex = 2; lastIndex < copy.length; ++lastIndex) {
         double slopePF = copy[p].slopeTo(copy[firstIndex]);
 
         //Searching for last point collinear to p. Collinear points are together because of sorting.
@@ -35,15 +35,13 @@ public class FastCollinearPoints {
         }
 
         //Add only those line segments, if p < point[first]
-        if(lastIndex - firstIndex >= 3 && copy[p].compareTo(copy[firstIndex]) < 0) {
+        if (lastIndex - firstIndex >= 3 && copy[p].compareTo(copy[firstIndex]) < 0) {
           lineSegments.add(new LineSegment(copy[p], copy[lastIndex - 1]));
         }
 
         firstIndex = lastIndex;
       }
     }
-
-
 
 
   }
@@ -53,15 +51,15 @@ public class FastCollinearPoints {
   }
 
   public LineSegment[] segments() {
-    return  lineSegments.toArray(new LineSegment[lineSegments.size()]);
+    return lineSegments.toArray(new LineSegment[lineSegments.size()]);
   }
 
   private void checkPointsForDuplicatesAndNullValues(Point[] points) {
     for (int i = 0; i < points.length - 1; i++) {
-      if(points[i] == null) {
+      if (points[i] == null) {
         throw new IllegalArgumentException("There is a null point.");
       }
-      if (points[i].compareTo(points[i+1]) == 0) {
+      if (points[i].compareTo(points[i + 1]) == 0) {
         throw new IllegalArgumentException("You have duplicate points.");
       }
     }
