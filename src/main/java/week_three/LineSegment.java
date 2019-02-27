@@ -12,7 +12,7 @@ public class LineSegment {
   }
 
   public void draw() {
-    p.draw(q);
+    p.drawTo(q);
   }
 
   @Override
