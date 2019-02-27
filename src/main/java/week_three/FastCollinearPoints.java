@@ -59,6 +59,9 @@ public class FastCollinearPoints {
       if (points[i] == null) {
         throw new IllegalArgumentException("There is a null point.");
       }
+    }
+
+    for (int i = 0; i < points.length - 1; i++) {
       if (points[i].compareTo(points[i + 1]) == 0) {
         throw new IllegalArgumentException("You have duplicate points.");
       }

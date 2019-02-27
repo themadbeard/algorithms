@@ -1,5 +1,6 @@
 package week_three;
 
+import edu.princeton.cs.algs4.StdOut;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,14 +21,20 @@ public class BruteCollinearPoints {
 
     // My eyes are bleeding.
     // (points.length - 3) there to avoid ArrayIndexOutOfBounds
-    Arrays.sort(copy);
-    for (int i = 0; i < copy.length; i++) {
-      for (int j = i + 1; j < copy.length; j++) {
-        for (int k = j + 1; k < copy.length; k++) {
-          for (int l = k + 1; l < copy.length; l++) {
-            Point p = copy[i], q = copy[j], r = copy[k], s = copy[l];
-            if (p.slopeTo(q) == q.slopeTo(r) && q.slopeTo(r) == r.slopeTo(s)) {
-              lineSegments.add(new LineSegment(p, s));
+    for (int first = 0; first < copy.length - 3; first++) {
+      for (int second = first + 1; second < copy.length - 2; second++) {
+        double slopeFirstSecond = copy[first].slopeTo(copy[second]);
+        for (int third = second + 1; third < copy.length - 1; third++) {
+          // compare slopes between first and second and first and third
+          double slopeFirstThird = copy[first].slopeTo(copy[third]);
+          if (Double.compare(slopeFirstSecond, slopeFirstThird) == 0) {
+            for (int fourth = third + 1; fourth < copy.length; fourth++) {
+              // compare slopes between first and second and first and fourth
+              double slopFirstFourth = copy[first].slopeTo(copy[fourth]);
+              if (Double.compare(slopeFirstSecond, slopFirstFourth) == 0) {
+                // all slopes are equal, so points are collinear
+                lineSegments.add(new LineSegment(copy[first], copy[fourth]));
+              }
             }
           }
         }
