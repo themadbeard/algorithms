@@ -1,8 +1,19 @@
 package sorting;
 
 
+import static sorting.SortingUtils.exchange;
+import static sorting.SortingUtils.isLess;
+
 import edu.princeton.cs.algs4.StdRandom;
 
+/**
+ * Quick-sort algorithm implementation.
+ * In-place sorting. Most popular sorting algorithm.
+ * <ul>
+ *   <li>Quadratic time in worst-case</li>
+ *   <li>Need optimization for duplicate keys</li>
+ * </ul>
+ */
 public class QuickSort {
 
     public static <T extends Comparable<T>> void sort(T[] unsorted) {
@@ -10,12 +21,35 @@ public class QuickSort {
         sort(unsorted, 0, unsorted.length - 1);
     }
 
+    /**
+     * Method for solving selection problem (find k-th largest element)
+     * @param unsorted array to research
+     * @param k the power of the element to search (usual it's min/max/median)
+     * @param <T>
+     * @return
+     */
+    private static <T extends Comparable<T>> T selection(T[] unsorted, int k) {
+        StdRandom.shuffle(unsorted);
+        int lo = 0; int hi = unsorted.length - 1;
+
+        while (lo < hi) {
+            int j = partitioning(unsorted, lo, hi);
+            if (j < k) {
+                lo = j + 1;
+            } else if (j > k) {
+                hi = j - 1;
+            } else {
+                return unsorted[k];
+            }
+        }
+        return unsorted[k];
+    }
+
     private static <T extends Comparable<T>> void sort(T[] array, int lo, int hi) {
         if(lo >= hi) return;
         int j = partitioning(array, lo, hi);
         sort(array, lo, j -1);
         sort(array, j + 1, hi);
-
     }
 
     private static <T extends Comparable<T>> int partitioning(T[] array, int lo, int hi) {
@@ -46,16 +80,5 @@ public class QuickSort {
         exchange(array, lo, j);
 
         return j;
-    }
-
-    private static <T extends Comparable<T>> boolean isLess(T first, T second) {
-        return first != second && first.compareTo(second) < 0;
-    }
-
-    private static <T> void exchange(T[] array, int elementToSwap, int swapWith) {
-        T temp = array[elementToSwap];
-        array[elementToSwap] = array[swapWith];
-        array[swapWith] = temp;
-
     }
 }
