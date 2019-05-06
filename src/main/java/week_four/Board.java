@@ -122,7 +122,7 @@ public class Board {
    * @return goal for [i][j] array cell.
    */
   private int goalFor(int i, int j) {
-    return i * dimension() + j + 1;
+    return i * dimension + j + 1;
   }
 
   private boolean isSpaceBlock(int block) {
