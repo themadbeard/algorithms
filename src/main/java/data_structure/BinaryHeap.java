@@ -48,6 +48,8 @@ public class BinaryHeap<Key extends Comparable<Key>> {
     return max;
   }
 
+  //Exchange key in child with key in parent, if it larger.
+  //Repeats until heap order restored.
   private void swim(int k){
     while (k > 1 && isLess(k / 2, k)) {
       exchange(container, k, k / 2);
@@ -55,6 +57,8 @@ public class BinaryHeap<Key extends Comparable<Key>> {
     }
   }
 
+  //Exchange the key in parent with the key in larger child.
+  //Repeats until heap order restored.
   private void sink(int k){
     while (2 * k <= N) {
       int j = 2 * k;

@@ -25,6 +25,10 @@ public class HeapSort {
     }
   }
 
+  //Parent key becomes smaller than one (or both) of its children's.
+  //Exchange key in parent with key in larger child.
+
+  //Top-down reheapify.
   private static <T extends Comparable<T>> void sink(T[] array, int k, int N) {
     while (2 * k <= N) {
       int j = 2 * k;
