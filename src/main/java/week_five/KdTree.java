@@ -48,10 +48,8 @@ public class KdTree {
       }
     }
 
-    /**
-     * get the rectangle associated to point p given parent node n
-     */
-    public RectHV getRectangle(Point2D point) {
+
+    RectHV getRectangle(Point2D point) {
       if (isVertical) {
         return prepareRectForVerticalNode(point);
       } else {
@@ -61,9 +59,8 @@ public class KdTree {
 
     private RectHV prepareRectForHorizontalNode(Point2D point) {
       int cmp = Double.compare(point.y(), this.point.y());
-      cmp = (cmp == 0 ? Double.compare(point.x(), this.point.x()) : cmp);
       if (cmp < 0) {
-        return new RectHV(this.rect.xmin(), this.rect.ymin(), this.point.x(), this.point.y());
+        return new RectHV(this.rect.xmin(), this.rect.ymin(), this.rect.xmax(), this.point.y());
       } else {
         return new RectHV(this.rect.xmin(), this.point.y(), this.rect.xmax(), this.rect.ymax());
       }
@@ -71,7 +68,6 @@ public class KdTree {
 
     private RectHV prepareRectForVerticalNode(Point2D point) {
       int cmp = Double.compare(point.x(), this.point.x());
-      cmp = (cmp == 0 ? Double.compare(point.y(), this.point.y()) : cmp);
       if (cmp < 0) {
         return new RectHV(this.rect.xmin(), this.rect.ymin(), this.point.x(), this.rect.ymax());
       } else {
@@ -92,11 +88,17 @@ public class KdTree {
   }
 
   public boolean contains(Point2D point) {
+    if (point == null) {
+      throw new IllegalArgumentException("contains() arg is null");
+    }
     return contains(root, point, true);
   }
 
-  public void insert(Point2D point2D) {
-    root = insert(root, point2D, null);
+  public void insert(Point2D point) {
+    if (point == null) {
+      throw new IllegalArgumentException("insert() arg is null");
+    }
+    root = insert(root, point, null);
   }
 
   public void draw() {
@@ -105,9 +107,12 @@ public class KdTree {
   }
 
   /**
-   * a nearest neighbor in the set to point p; null if the set is empty
+   * a nearest neighbor in the set to point point; null if the set is empty
    */
   public Point2D nearest(Point2D point) {
+    if (point == null) {
+      throw new IllegalArgumentException("nearest() arg is null");
+    }
     if (isEmpty()) {
       return null;
     } else {
@@ -125,18 +130,20 @@ public class KdTree {
         closest = node.point;
       }
 
-      if (closest.distanceTo(queryPoint) >= node.rect.distanceSquaredTo(queryPoint)) {
+      // If the current min point is closer to query than the current point
+      if (closest.distanceSquaredTo(queryPoint) >= node.rect.distanceSquaredTo(queryPoint)) {
         if (node.point.distanceSquaredTo(queryPoint) < closest.distanceSquaredTo(queryPoint)) {
           closest = node.point;
         }
-      }
 
-      if (node.right != null && node.right.rect.contains(queryPoint)) {
-        closest = nearest(node.right, queryPoint, closest);
-        closest = nearest(node.left, queryPoint, closest);
-      } else {
-        closest = nearest(node.left, queryPoint, closest);
-        closest = nearest(node.right, queryPoint, closest);
+        // Check in which order should we iterate
+        if (node.right != null && node.right.rect.contains(queryPoint)) {
+          closest = nearest(node.right, queryPoint, closest);
+          closest = nearest(node.left, queryPoint, closest);
+        } else {
+          closest = nearest(node.left, queryPoint, closest);
+          closest = nearest(node.right, queryPoint, closest);
+        }
       }
     }
 
@@ -144,6 +151,10 @@ public class KdTree {
   }
 
   public Iterable<Point2D> range(RectHV rect) {
+    if (rect == null) {
+      throw new IllegalArgumentException("range() arg is null");
+    }
+
     List<Point2D> range = new ArrayList<>();
 
     range(root, rect, range);
@@ -153,10 +164,11 @@ public class KdTree {
 
   private Node insert(Node node, Point2D point, Node parent) {
     if (node == null) {
-      size++;
       if (parent == null) {
+        size++;
         return new Node(point, new RectHV(0.0, 0.0, 1.0, 1.0), true);
       }
+      size++;
       return new Node(point, parent.getRectangle(point), !parent.isVertical);
     }
 
@@ -167,6 +179,7 @@ public class KdTree {
     } else {
       node.right = insert(node.right, point, node);
     }
+
     return node;
   }
 
@@ -174,39 +187,33 @@ public class KdTree {
     int cmp;
     if (isVertical) {
       cmp = Double.compare(a.x(), b.x());
-
-      if (cmp == 0) {
-        return Double.compare(a.y(), b.y());
-      }
     } else {
       cmp = Double.compare(a.y(), b.y());
-
-      if (cmp == 0) {
-        return Double.compare(a.x(), b.x());
-      }
     }
 
     return cmp;
   }
 
   private boolean contains(Node node, Point2D point, boolean isVertical) {
-    while (node != null) {
-      int cmp = compare(point, node.point, isVertical);
-
-      if (cmp < 0) {
-        return contains(node.left, point, !node.isVertical);
-      } else if (cmp > 0) {
-        return contains(node.right, point, !node.isVertical);
-      } else {
-        return true;
-      }
+    if (node == null) {
+      return false;
     }
 
-    return false;
+    if (node.point.equals(point)) {
+      return true;
+    }
+
+    int cmp = compare(point, node.point, isVertical);
+
+    if (cmp < 0) {
+      return contains(node.left, point, !node.isVertical);
+    } else {
+      return contains(node.right, point, !node.isVertical);
+    }
   }
 
   private void range(Node node, RectHV rect, List<Point2D> range) {
-    if (node == null || !node.rect.intersects(rect)) {
+    if (!node.rect.intersects(rect)) {
       return;
     }
 
@@ -227,6 +234,5 @@ public class KdTree {
     draw(node.left);
     draw(node.right);
   }
-
 
 }
