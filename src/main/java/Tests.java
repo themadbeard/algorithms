@@ -1,22 +1,21 @@
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.UF;
+import java.util.TreeMap;
 
 public class Tests {
 
   public static void main(String[] args) {
-    int N = StdIn.readInt();
-    UF uf = new UF(N);
+    TreeMap<String, Integer> map = new TreeMap<>();
 
-    while (!StdIn.isEmpty()) {
-      int p = StdIn.readInt();
-      int q = StdIn.readInt();
+    map.put("S", 1);
+    map.put("E", 2);
+    map.put("A", 3);
+    map.put("R", 4);
+    map.put("C", 5);
+    map.put("H", 5);
 
-      if(!uf.connected(p, q)) {
-        uf.union(p, q);
-        StdOut.println(p + " " + q);
-      }
-    }
+    System.out.println(map);
   }
 
 }

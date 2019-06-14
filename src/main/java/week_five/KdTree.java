@@ -125,29 +125,40 @@ public class KdTree {
   }
 
   private Point2D nearest(Node node, Point2D queryPoint, Point2D closest) {
-    if (node != null) {
-      if (closest == null) {
-        closest = node.point;
-      }
+    if (node == null) {
+      return closest;
+    }
 
-      // If the current min point is closer to query than the current point
-      if (closest.distanceSquaredTo(queryPoint) >= node.rect.distanceSquaredTo(queryPoint)) {
-        if (node.point.distanceSquaredTo(queryPoint) < closest.distanceSquaredTo(queryPoint)) {
-          closest = node.point;
-        }
+    if (node.rect.distanceSquaredTo(queryPoint) >= queryPoint.distanceSquaredTo(closest)) {
+      return closest;
+    }
 
-        // Check in which order should we iterate
-        if (node.right != null && node.right.rect.contains(queryPoint)) {
-          closest = nearest(node.right, queryPoint, closest);
-          closest = nearest(node.left, queryPoint, closest);
-        } else {
-          closest = nearest(node.left, queryPoint, closest);
-          closest = nearest(node.right, queryPoint, closest);
-        }
-      }
+    if ((node.point).distanceSquaredTo(queryPoint) < queryPoint.distanceSquaredTo(closest)) {
+      closest = node.point;
+    }
+
+    Point2D subClosestP;
+    if (node.left != null && isSameSide(queryPoint, node.left, node)) {
+      subClosestP = nearest(node.left, queryPoint, closest);
+      closest = nearest(node.right, queryPoint, subClosestP);
+    }
+    else {
+      subClosestP = nearest(node.right, queryPoint, closest);
+      closest = nearest(node.left, queryPoint, subClosestP);
     }
 
     return closest;
+  }
+
+  private boolean isSameSide(Point2D p, Node n, Node parent) {
+    if (parent.isVertical) {
+      return Point2D.X_ORDER.compare(p, parent.point)
+          == Point2D.X_ORDER.compare(n.point, parent.point);
+    }
+    else {
+      return Point2D.Y_ORDER.compare(p, parent.point)
+          == Point2D.Y_ORDER.compare(n.point, parent.point);
+    }
   }
 
   public Iterable<Point2D> range(RectHV rect) {
